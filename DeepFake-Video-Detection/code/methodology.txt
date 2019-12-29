@@ -1,0 +1,45 @@
+1. Collection .......
+The data set of fake and real images is used to trained our CNN model.80% off the fake images are created by and 20% are from Kaggle. The simulation of deep fake is created by the following steps:
+1. The source and destination image are selected.
+2. Source image is blurred using gaussian blur of kernel (5,5).
+3. The dlib library is used to extract face from the image.
+4. 3d wrap image is created using scikit.spatial.Delaunay on destination feature points to find out the delaunay points that would be used to make the the affine matrices.
+5. Bilinear interpolation is used to find the resulant warp image by using the src image face and finding the outer codes of the grid and delaunay points of the both images.
+6. Mask is created to blend the warp created to the destination image to make it look real.
+7. Colors are corrected of the warp image.
+8. Shrinking of the mask is done using erosion of kernel (10,10).
+9. Output image is created using warped source face, destination face and mask created.
+
+We have a dataset of 3092 images with a partion of 70-30 for training and testing sets for model respectively.
+
+2. pre.........
+1. The images are resized to the shape of 224x224 pixels size to train with a batch size of 16.
+2. keras library is used for the preprocessing method which us to create the training set and test set ready for model training.
+
+3. model...
+The model we have created is an CNN model with following architecture and parameters:
+1. 11 layers are used to create the deepfake detection system.
+2. First 6 layers are convolution and max pooling layers with neccessary parameters and relu activation function is used:
+layer 1: Conv layer with 64 feature extractors of (6,6)
+layer 2: Max pooling layer with pooling size (4,4)
+layer 3: Conv layer with 32 feature extractors of (3,3)
+layer 4: Max pooling layer with pooling size (3,3)
+layer 5: Conv layer with 16 feature extractors of (3,3)
+layer 6: Max pooling layer with pooling size (2,2)
+3. Next layers are flattening layers and 3 fully conneccted layers with sigmod activation function in the end.
+4. The 3 fully connected layers have 64,40,1 units respectively.
+
+3. Train......
+Adam is used as the optimizer, binary crossentropy is used for loss function and accuracy matrix in the compiling process of the model.
+
+4. Validation prediction.....
+Prediction and validation would be done usning various deepfake videos collected from anonomous websites.
+Steps taken to find if video is fake or real:
+1. Loop the video per frame.
+2. Predict the frame if it is real or not.
+3. count the number of fake predictions.
+4. if fake predictions becomes greater than a preset value then it is fake.
+5. else keep looping till the end.
+6. if total fake predictions in the video is less than a preset value the video is real.
+7. Do this for every video.
+8. Calculate the accuracy of the model.
